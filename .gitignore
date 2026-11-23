@@ -39,3 +39,11 @@ Thumbs.db
 # Temporary archives
 *.zip
 *.tar.gz
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.coverage

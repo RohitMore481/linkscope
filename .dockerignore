@@ -13,3 +13,7 @@ tests
 docs
 app
 linkscope (1).zip
+__pycache__
+*.pyc
+.pytest_cache
+backend/tests

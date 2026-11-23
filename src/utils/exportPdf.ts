@@ -129,6 +129,9 @@ export function exportAnalysisToPdf(report: LinkAnalysisResponse): void {
       14,
       9
     );
+    if (q.business_relevance) {
+      addParagraph(`Business Relevance: ${q.business_relevance}`, 14, 9);
+    }
   });
 
   // Section 3: SEO Improvement
@@ -141,19 +144,30 @@ export function exportAnalysisToPdf(report: LinkAnalysisResponse): void {
   addSubHeading("Primary & Secondary Keywords");
   addParagraph(`Primary: ${seo.primary_keyword}`, 8);
   addParagraph(`Secondary: ${seo.secondary_keywords.join(", ")}`, 8);
+  if (seo.long_tail_keywords && seo.long_tail_keywords.length > 0) {
+    addParagraph(`Long-Tail: ${seo.long_tail_keywords.join(", ")}`, 8);
+  }
   addSubHeading("Supporting Content Ideas");
   addBulletList(seo.content_ideas);
 
   // Section 4: Top 5 Services
   addSectionHeading("04. Top 5 Services");
   report.analysis.top_5_services.forEach((service, idx) => {
-    ensureSpace(30);
+    ensureSpace(36);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.setTextColor(15, 23, 42);
     doc.text(`${String(idx + 1).padStart(2, "0")}. ${service.name}`, marginX, y);
     y += 13;
     addParagraph(service.description, 14, 9.5);
+    if (service.target_industry || service.target_customer || service.main_benefit) {
+      const details = [
+        service.target_industry ? `Industry: ${service.target_industry}` : null,
+        service.target_customer ? `Customer: ${service.target_customer}` : null,
+        service.main_benefit ? `Benefit: ${service.main_benefit}` : null,
+      ].filter(Boolean).join("  |  ");
+      addParagraph(details, 14, 8.5);
+    }
   });
 
   // Section 5: Target Audience Identification
@@ -163,8 +177,16 @@ export function exportAnalysisToPdf(report: LinkAnalysisResponse): void {
   addParagraph(audience.primary_audience, 8);
   addSubHeading("Secondary Audience");
   addParagraph(audience.secondary_audience, 8);
-  addSubHeading("Industries");
-  addParagraph(audience.industries.join(", "), 8);
+  addSubHeading("Industries & Segments");
+  addParagraph((audience.industry_segments || audience.industries).join(", "), 8);
+  if (audience.business_types && audience.business_types.length > 0) {
+    addSubHeading("Business Types");
+    addParagraph(audience.business_types.join(", "), 8);
+  }
+  if (audience.geographical_focus) {
+    addSubHeading("Geographical Focus");
+    addParagraph(audience.geographical_focus, 8);
+  }
   addSubHeading("Customer Needs");
   addBulletList(audience.customer_needs);
   addSubHeading("Recommended Segments");

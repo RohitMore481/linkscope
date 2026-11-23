@@ -467,7 +467,18 @@ export default function AnalysisForm({
                       (comp, idx) => (
                         <tr key={idx} className="hover:bg-slate-50/70 transition-colors">
                           <td className="py-3.5 pr-4 font-semibold text-slate-900 whitespace-nowrap">
-                            {comp.name}
+                            <div className="flex flex-col gap-1 items-start">
+                              <span>{comp.name}</span>
+                              {comp.is_inferred !== undefined ? (
+                                <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-sm ${comp.is_inferred ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}`}>
+                                  {comp.is_inferred ? 'AI Inference' : 'Researched Fact'}
+                                </span>
+                              ) : comp.source ? (
+                                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-sm bg-slate-100 text-slate-600 border border-slate-200">
+                                  {comp.source}
+                                </span>
+                              ) : null}
+                            </div>
                           </td>
                           <td className="py-3.5 px-4 min-w-[200px] leading-relaxed">
                             {comp.why_competitor}
@@ -537,7 +548,7 @@ export default function AnalysisForm({
                       <th className="py-2.5 px-4">Query</th>
                       <th className="py-2.5 px-4">Platform</th>
                       <th className="py-2.5 px-4">Intent</th>
-                      <th className="py-2.5 px-4">Target Audience</th>
+                      <th className="py-2.5 px-4">Target Audience & Business Relevance</th>
                       <th className="py-2.5 pl-4 text-right">Copy</th>
                     </tr>
                   </thead>
@@ -557,7 +568,13 @@ export default function AnalysisForm({
                           {item.intent}
                         </td>
                         <td className="py-3 px-4 text-slate-600">
-                          {item.target_audience}
+                          <div>{item.target_audience}</div>
+                          {item.business_relevance && (
+                            <div className="mt-1 text-xs text-indigo-700 font-normal">
+                              <span className="font-semibold text-slate-500">Relevance: </span>
+                              {item.business_relevance}
+                            </div>
+                          )}
                         </td>
                         <td className="py-3 pl-4 text-right">
                           <button
@@ -636,6 +653,14 @@ export default function AnalysisForm({
                         {result.analysis.seo_improvement.secondary_keywords.join(" · ")}
                       </div>
                     </div>
+                    {result.analysis.seo_improvement.long_tail_keywords && result.analysis.seo_improvement.long_tail_keywords.length > 0 && (
+                      <div className="sm:col-span-2 pt-2 border-t border-slate-50">
+                        <div className="text-xs font-semibold text-slate-500">Long-Tail Keywords</div>
+                        <div className="mt-1 text-sm text-slate-700 leading-relaxed">
+                          {result.analysis.seo_improvement.long_tail_keywords.join(" · ")}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -689,6 +714,25 @@ export default function AnalysisForm({
                         <p className="text-sm text-slate-600 leading-relaxed">
                           {service.description}
                         </p>
+                        {(service.target_industry || service.target_customer || service.main_benefit) && (
+                          <div className="pt-1.5 flex flex-wrap gap-2 text-xs">
+                            {service.target_industry && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-sm bg-slate-100 text-slate-700">
+                                <span className="font-semibold text-slate-500 mr-1">Industry:</span> {service.target_industry}
+                              </span>
+                            )}
+                            {service.target_customer && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-sm bg-indigo-50 text-indigo-700">
+                                <span className="font-semibold text-indigo-500 mr-1">Customer:</span> {service.target_customer}
+                              </span>
+                            )}
+                            {service.main_benefit && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-sm bg-emerald-50 text-emerald-800">
+                                <span className="font-semibold text-emerald-600 mr-1">Benefit:</span> {service.main_benefit}
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </li>
                   ))}
@@ -726,11 +770,47 @@ export default function AnalysisForm({
                   </div>
 
                   <div className="border-t border-slate-100 pt-4">
-                    <div className="text-xs font-semibold text-slate-500">Industries</div>
+                    <div className="text-xs font-semibold text-slate-500">Industries & Segments</div>
                     <p className="mt-1 text-sm text-slate-700 leading-relaxed">
-                      {result.analysis.target_audience_identification.industries.join(" · ")}
+                      {(result.analysis.target_audience_identification.industry_segments || result.analysis.target_audience_identification.industries).join(" · ")}
                     </p>
                   </div>
+
+                  {result.analysis.target_audience_identification.business_types && result.analysis.target_audience_identification.business_types.length > 0 && (
+                    <div className="border-t border-slate-100 pt-4">
+                      <div className="text-xs font-semibold text-slate-500">Business Types</div>
+                      <p className="mt-1 text-sm text-slate-700 leading-relaxed">
+                        {result.analysis.target_audience_identification.business_types.join(" · ")}
+                      </p>
+                    </div>
+                  )}
+
+                  {result.analysis.target_audience_identification.geographical_focus && (
+                    <div className="border-t border-slate-100 pt-4">
+                      <div className="text-xs font-semibold text-slate-500">Geographical Focus</div>
+                      <p className="mt-1 text-sm text-slate-700 leading-relaxed">
+                        {result.analysis.target_audience_identification.geographical_focus}
+                      </p>
+                    </div>
+                  )}
+
+                  {result.analysis.target_audience_identification.customer_profiles && result.analysis.target_audience_identification.customer_profiles.length > 0 && (
+                    <div className="border-t border-slate-100 pt-4">
+                      <div className="text-xs font-semibold text-slate-500">Customer Profiles</div>
+                      <p className="mt-1 text-sm text-slate-700 leading-relaxed">
+                        {result.analysis.target_audience_identification.customer_profiles.join(" · ")}
+                      </p>
+                    </div>
+                  )}
+
+                  {result.analysis.target_audience_identification.interests && result.analysis.target_audience_identification.interests.length > 0 && (
+                    <div className="border-t border-slate-100 pt-4">
+                      <div className="text-xs font-semibold text-slate-500">Audience Interests</div>
+                      <p className="mt-1 text-sm text-slate-700 leading-relaxed">
+                        {result.analysis.target_audience_identification.interests.join(" · ")}
+                      </p>
+                    </div>
+                  )}
 
                   <div className="border-t border-slate-100 pt-4">
                     <div className="text-xs font-semibold text-slate-500">Customer Needs</div>
