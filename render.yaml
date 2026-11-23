@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: linkscope
+    runtime: docker
+    plan: starter
+    region: oregon
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: GEMINI_ENCRYPTION_KEY
+        generateValue: true
+      - key: SESSION_KEY_TTL_SECONDS
+        value: 86400
+      - key: AI_PROVIDER
+        value: gemini
+      - key: AI_MODEL
+        value: gemini-3.1-flash-lite

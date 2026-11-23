@@ -1,0 +1,6 @@
+{
+  "name": "LinkScope",
+  "description": "AI-powered website link analysis dashboard for competitor, SEO, search query, service, and audience intelligence.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
