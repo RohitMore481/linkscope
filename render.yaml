@@ -3,7 +3,7 @@ services:
   - type: web
     name: linkscope
     runtime: docker
-    plan: starter
+    plan: free
     region: oregon
     healthCheckPath: /api/health
     envVars:
